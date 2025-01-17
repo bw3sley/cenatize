@@ -1,0 +1,42 @@
+{
+  "name": "sanitize-it",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A library to sanitize HTML and JavaScript to prevent XSS attacks.",
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "babel src -d dist && uglifyjs dist/index.js -o dist/index.min.js",
+    "test": "vitest run"
+  },
+  "author": "Wesley Junior <bw3sley@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "sanitize-it",
+    "sanitize",
+    "HTML",
+    "JavaScript",
+    "XSS",
+    "security"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bw3sley/sanitize-it.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bw3sley/sanitize-it/issues"
+  },
+  "homepage": "https://github.com/bw3sley/sanitize-it",
+  "dependencies": {
+    "jsdom": "^24.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.24.8",
+    "@babel/core": "^7.24.9",
+    "@babel/preset-env": "^7.24.8",
+    "uglify-js": "^3.19.0",
+    "vitest": "^2.0.4"
+  }
+}

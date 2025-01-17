@@ -1,0 +1,5 @@
+# Tests
+/src/test.spec.js
+
+# Building
+.babelrc
