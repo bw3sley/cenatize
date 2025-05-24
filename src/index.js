@@ -1,90 +1,119 @@
 import { JSDOM } from "jsdom";
 
 const allowedTags = [
-    "a", "abbr", "b", "blockquote", "body", "br", "center", "code", "dd", "div", "dl", "dt", "em", "font",
-    "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "label", "li", "ol", "p", "pre",
-    "small", "source", "span", "strong", "sub", "sup", "table", "tbody", "tr", "td", "th", "thead", "ul", "u", "video",
-    "svg", "circle", "ellipse", "line", "path", "polygon", "polyline", "rect", "text", "g"
+  "a", "abbr", "b", "blockquote", "body", "br", "center", "code", "dd", "div", "dl", "dt", "em", "font",
+  "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "img", "label", "li", "ol", "p", "pre",
+  "small", "source", "span", "strong", "sub", "sup", "table", "tbody", "tr", "td", "th", "thead", "ul", "u", "video",
+  "svg", "circle", "ellipse", "line", "path", "polygon", "polyline", "rect", "text", "g"
 ]
 
 const allowedAttributes = {
-    "*": ["align", "color", "controls", "height", "href", "id", "src", "style", "target", "title", "type", "width"],
-    "a": ["href", "target"],
-    "img": ["src", "alt", "title", "width", "height"],
-    "video": ["src", "controls", "width", "height"],
-    "svg": ["width", "height", "viewBox"],
-    "circle": ["cx", "cy", "r", "fill"],
-    "rect": ["x", "y", "width", "height", "fill"],
-    "line": ["x1", "y1", "x2", "y2", "stroke"],
-    "path": ["d", "fill"],
-    "polygon": ["points", "fill"],
-    "polyline": ["points", "fill"],
-    "text": ["x", "y", "fill"],
-    "g": []
+  "*": ["align", "color", "controls", "height", "href", "id", "src", "style", "target", "title", "type", "width"],
+  "a": ["href", "target"],
+  "img": ["src", "alt", "title", "width", "height"],
+  "video": ["src", "controls", "width", "height"],
+  "svg": ["width", "height", "viewBox"],
+  "circle": ["cx", "cy", "r", "fill"],
+  "rect": ["x", "y", "width", "height", "fill"],
+  "line": ["x1", "y1", "x2", "y2", "stroke"],
+  "path": ["d", "fill"],
+  "polygon": ["points", "fill"],
+  "polyline": ["points", "fill"],
+  "text": ["x", "y", "fill"],
+  "g": []
 }
 
 const allowedSchemas = ["http:", "https:", "data:", "m-files:", "file:", "ftp:", "mailto:", "pw:"];
 
-export function sanitizeHTML(input) {
-    const hasBody = input.includes("<body>");
+const voidElements = [
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"
+]
 
-    const param = hasBody ? input : `<div>${input}</div>`; 
+function sanitizeHTML(input) {
+  const dom = new JSDOM(`<div id="__sanitize_root__">${input}</div>`);
+  
+  const doc = dom.window.document;
+  
+  const root = doc.getElementById("__sanitize_root__");
+  
+  let html = "";
+  
+  for (const child of root.childNodes) {
+    html += nodeToString(child, dom);
+  }
+  
+  return html;
+}
 
-    const dom = new JSDOM(param);
+function nodeToString(node, dom) {
+  const { Node } = dom.window;
 
-    const doc = dom.window.document;
-
-    const root = hasBody ? doc.body : doc.body.firstChild;
-
-    const tags = root.getElementsByTagName("*");
-
-    for (let counter = 0; counter < tags.length; counter++) {
-        const tag = tags[counter];
-
-        if (tag.nodeName.toLowerCase() === "script") {
-            tag.parentNode.removeChild(tag);
-
-            counter--;
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.nodeValue;
+  }
+  
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const tag = node.tagName.toLowerCase();
+  
+    if (tag === "script") return "";
+  
+    if (!allowedTags.includes(tag)) {
+      let out = "";
+  
+      for (const child of node.childNodes) {
+        out += nodeToString(child, dom);
+      }
+  
+      return out;
+    }
+  
+    let out = `<${tag}`;
+  
+    for (const { name, value } of node.attributes) {
+      const attr = name.toLowerCase();
+  
+      const okGlobal = allowedAttributes["*"].includes(attr);
+      const okTag = (allowedAttributes[tag] || []).includes(attr);
+  
+      if (!okGlobal && !okTag) continue;
+  
+      if (["href", "src", "action"].includes(attr)) {
+        try {
+          const url = new URL(value, "http://example.com");
+          
+          if (!allowedSchemas.includes(url.protocol)) continue;
+        } 
+        
+        catch {
+          continue;
         }
-
-        else if (!allowedTags.includes(tag.nodeName.toLowerCase())) {
-            while (tag.firstChild) {
-                tag.parentNode.insertBefore(tag.firstChild, tag);
-            }
-
-            tag.parentNode.removeChild(tag);
-
-            counter--;
-        }
-
-        else {
-            const attributes = tag.attributes;
-
-            for (let _counter = attributes.length - 1; _counter >= 0; _counter--) {
-                const attr = attributes[_counter];
-
-                const tagName = tag.nodeName.toLowerCase();
-                const attrName = attr.name.toLowerCase();
-                const attrValue = attr.value.toLowerCase();
-
-                if (!allowedAttributes["*"].includes(attrName) && !(allowedAttributes[tagName] && allowedAttributes[tagName].includes(attrName))) {
-                    tag.removeAttribute(attrName);
-                }
-
-                else if (["href", "src", "action"].includes(attrName)) {
-                    const url = new URL(attrValue, "http://example.com");
-
-                    if (!allowedSchemas.includes(url.protocol)) {
-                        tag.removeAttribute(attrName);
-                    }
-                }
-            }
-        }
+      }
+      
+      const escaped = value.replace(/"/g, "&quot;");
+      
+      out += ` ${name}="${escaped}"`;
+    }
+    
+    out += ">";
+    
+    if (voidElements.includes(tag)) {
+      return out;
+    }
+    
+    for (const child of node.childNodes) {
+      out += nodeToString(child, dom);
     }
 
-    return hasBody ? root.outerHTML : root.innerHTML;
+    out += `</${tag}>`;
+
+    return out;
+  }
+
+  return "";
 }
 
-export function sanitizeJS(input) {
-    return input.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, "");
+function sanitizeJS(input) {
+  return input.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
 }
+
+export const cenatizer = { html: sanitizeHTML, js: sanitizeJS }
