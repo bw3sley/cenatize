@@ -1,19 +1,19 @@
-# sanitize-it
+# cenatize
 
-sanitize-it is a library to sanitize HTML and JavaScript to prevent XSS attacks.
+cenatize is a library to sanitize HTML and JavaScript to prevent XSS attacks.
 
 ## Usage
 
 To start using the library install it in your project:
 
 ```bash
-npm instal sanitize-it
+npm instal cenatize
 ```
 
 Import and use the `sanitizeHTML` and `sanitizeJS` functions to sanitize your HTML and JavaScript content.
 
 ```js
-import { sanitizeHTML, sanitizeJS } from "sanitize-it";
+import { sanitizeHTML, sanitizeJS } from "cenatize";
 
 // Sanitize HTML content
 const unsafeHTML = `<div><script>alert("XSS")</script><b>Bold</b></div>`;
@@ -31,7 +31,7 @@ console.log(safeJS); // Output: (empty string)
 
 ### Tags
 
-sanitize-it allows the following HTML and SVG tags:
+cenatize allows the following HTML and SVG tags:
 
 `a, abbr, b, blockquote, body, br, center, code, dd, div, dl, dt, em, font,
 h1, h2, h3, h4, h5, h6, hr, i, img, label, li, ol, p, pre,
@@ -73,10 +73,10 @@ Only the following CSS properties are allowed in the `style` attribute:
 
 We :purple_heart: contributions and feedback.
 
-If you have any questions or suggestions, [create an issue](https://github.com/bw3sley/sanitize-it/issues/new).
+If you have any questions or suggestions, [create an issue](https://github.com/bw3sley/cenatize/issues/new).
 
-Bug reports should always be done with a [new issue](https://github.com/bw3sley/sanitize-it/issues/new).
+Bug reports should always be done with a [new issue](https://github.com/bw3sley/cenatize/issues/new).
 
 ## License
 
-sanitize-it is shared under the [MIT license](https://github.com/bw3sley/sanitize-it/blob/master/LICENSE.md). This means you can modify and use it however you want, even for commercial use. But please give this GitHub repo a :star:.
+cenatize is shared under the [MIT license](https://github.com/bw3sley/cenatize/blob/master/LICENSE.md). This means you can modify and use it however you want, even for commercial use. But please give this GitHub repo a :star:.
