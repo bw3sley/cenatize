@@ -33,7 +33,6 @@ function sanitizeHTML(input) {
   const dom = new JSDOM(`<div id="__sanitize_root__">${input}</div>`);
   
   const doc = dom.window.document;
-  
   const root = doc.getElementById("__sanitize_root__");
   
   let html = "";

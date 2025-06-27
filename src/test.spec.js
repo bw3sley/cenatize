@@ -39,10 +39,10 @@ describe('cenatizer.html', () => {
   })
 
   it('should retain allowed tags and attributes', () => {
-    const unsafeHTML = `<div><b style="color:red">Bold</b><img src="http://example.com/image.jpg" width="100" height="100"></div>`;
+    const unsafeHTML = `<div><b style="color:red">Bold</b><img src="http://example.com/image.png" width="100" height="100"></div>`;
     const safeHTML = cenatizer.html(unsafeHTML);
     
-    expect(safeHTML).toBe("<div><b style=\"color:red\">Bold</b><img src=\"http://example.com/image.jpg\" width=\"100\" height=\"100\"></div>");
+    expect(safeHTML).toBe("<div><b style=\"color:red\">Bold</b><img src=\"http://example.com/image.png\" width=\"100\" height=\"100\"></div>");
   })
 
   it('should handle nested elements correctly', () => {

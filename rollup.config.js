@@ -5,8 +5,8 @@ import commonjs from "@rollup/plugin-commonjs";
 import terser from "@rollup/plugin-terser";
 
 export default {
-  input: "./src/index.js",
   external: ["jsdom"],
+  input: "./src/index.js",
   plugins: [resolve(), commonjs()],
   output: [
     {

@@ -9,5 +9,6 @@ const snippets = [
 for (const html of snippets) {
   console.log('RAW:', html);
   console.log('CLEAN:', sanitizeHTML(html));
+  
   console.log('---');
 }

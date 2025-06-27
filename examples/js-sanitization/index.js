@@ -8,5 +8,6 @@ const snippets = [
 for (const code of snippets) {
   console.log('RAW JS:', code);
   console.log('CLEAN JS:', sanitizeJS(code));
+  
   console.log('---');
 }
